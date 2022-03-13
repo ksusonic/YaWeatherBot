@@ -1,0 +1,4 @@
+bot:
+  admin: # Admin chat_id
+  allowed_chats: # subscribed chats
+    -
