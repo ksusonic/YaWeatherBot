@@ -28,7 +28,11 @@ func main() {
 	}
 
 	b.Handle("/id", func(c tele.Context) error {
-		return c.Send(strconv.FormatInt(c.Chat().ID, 10))
+		prefix := "Chat id: "
+		id := strconv.FormatInt(c.Chat().ID, 10)
+		return c.Send(prefix+id, &tele.SendOptions{
+			Entities: tele.Entities{tele.MessageEntity{Type: tele.EntityCode, Offset: len(prefix), Length: len(id)}}})
 	})
+
 	b.Start()
 }
