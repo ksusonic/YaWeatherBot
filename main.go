@@ -9,6 +9,13 @@ import (
 	tele "gopkg.in/telebot.v3"
 )
 
+func GetChatId(c tele.Context) error {
+	prefix := "Chat id: "
+	id := strconv.FormatInt(c.Chat().ID, 10)
+	return c.Send(prefix+id, &tele.SendOptions{
+		Entities: tele.Entities{tele.MessageEntity{Type: tele.EntityCode, Offset: len(prefix), Length: len(id)}}})
+}
+
 func main() {
 	_, err := MakeConfig(ParsePath())
 	if err != nil {
@@ -27,12 +34,7 @@ func main() {
 		return
 	}
 
-	b.Handle("/id", func(c tele.Context) error {
-		prefix := "Chat id: "
-		id := strconv.FormatInt(c.Chat().ID, 10)
-		return c.Send(prefix+id, &tele.SendOptions{
-			Entities: tele.Entities{tele.MessageEntity{Type: tele.EntityCode, Offset: len(prefix), Length: len(id)}}})
-	})
-
+	b.Handle("/id", GetChatId)
+	b.Handle("/pwd", GetChatId)
 	b.Start()
 }
