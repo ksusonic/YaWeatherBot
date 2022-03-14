@@ -8,4 +8,4 @@ WORKDIR /app
 
 RUN go build -o main .
 
-CMD ["/app/main"]
+ENTRYPOINT /app/main
