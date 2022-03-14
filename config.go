@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	Bot struct {
-		Admin string `yaml:"admin"`
+		Admin int64 `yaml:"admin"`
 	}
 }
 

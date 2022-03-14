@@ -7,6 +7,7 @@ import (
 	"time"
 
 	tele "gopkg.in/telebot.v3"
+	"gopkg.in/telebot.v3/middleware"
 )
 
 func GetChatId(c tele.Context) error {
@@ -17,7 +18,7 @@ func GetChatId(c tele.Context) error {
 }
 
 func main() {
-	_, err := MakeConfig(ParsePath())
+	config, err := MakeConfig(ParsePath())
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -33,8 +34,11 @@ func main() {
 		log.Fatal("Check your token.\n", err)
 		return
 	}
+	b.Use(middleware.Logger())
+	adminOnly := b.Group()
+	adminOnly.Use(middleware.Whitelist(config.Bot.Admin))
 
-	b.Handle("/id", GetChatId)
-	b.Handle("/pwd", GetChatId)
+	FillHandlers(b)
+
 	b.Start()
 }
