@@ -1,11 +1,9 @@
-FROM golang:latest
-
-RUN mkdir /app
-
-ADD . /app/
+FROM golang:1.19-alpine
 
 WORKDIR /app
+ADD . /app/
 
-RUN go build -o main .
+RUN go mod download
+RUN go build -o main cmd/main.go
 
 ENTRYPOINT /app/main
