@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"github.com/ksusonic/YaWeatherBot/config"
 	"strconv"
 
 	tele "gopkg.in/telebot.v3"
@@ -19,7 +20,7 @@ func initHandlers(b *tele.Bot) {
 	})
 }
 
-func initMiddleware(b *tele.Bot, config *Config) {
+func initMiddleware(b *tele.Bot, config *config.Config) {
 	b.Use(middleware.Logger())
 
 	if config.Admin != 0 {
