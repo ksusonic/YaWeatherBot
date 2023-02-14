@@ -2,18 +2,19 @@ package main
 
 import (
 	"flag"
-	"gopkg.in/yaml.v2"
 	"os"
+
+	"github.com/caarlos0/env/v6"
+	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
-	Bot struct {
-		Admin int64 `yaml:"admin"`
-	}
+	Admin int64  `yaml:"admin"`
+	Token string `yaml:"-" env:"TOKEN"`
 }
 
 func MakeConfig(configPath string) (*Config, error) {
-	config := &Config{}
+	var config Config
 
 	file, err := os.Open(configPath)
 	if err != nil {
@@ -22,12 +23,15 @@ func MakeConfig(configPath string) (*Config, error) {
 	defer file.Close()
 
 	d := yaml.NewDecoder(file)
-
 	if err := d.Decode(&config); err != nil {
 		return nil, err
 	}
 
-	return config, nil
+	if err := env.Parse(&config); err != nil {
+		return nil, err
+	}
+
+	return &config, nil
 }
 
 func ParsePath() string {

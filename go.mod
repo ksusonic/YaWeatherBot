@@ -1,8 +1,9 @@
-module YaWeatherBot
+module github.com/ksusonic/YaWeatherBot
 
-go 1.17
+go 1.19
 
 require (
-	gopkg.in/telebot.v3 v3.0.0
+	github.com/caarlos0/env/v6 v6.10.1
+	gopkg.in/telebot.v3 v3.1.2
 	gopkg.in/yaml.v2 v2.4.0
 )
