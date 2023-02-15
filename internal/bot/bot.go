@@ -27,7 +27,6 @@ func NewBot(cfg *config.Config) *Bot {
 		log.Fatal("Error creating bot:\n", err)
 	}
 
-	initHandlers(teleBot)
 	initMiddleware(teleBot, cfg)
 
 	return &Bot{
@@ -38,23 +37,24 @@ func NewBot(cfg *config.Config) *Bot {
 	}
 }
 
-func (b *Bot) SendForecast() {
+func (b *Bot) SendForecast(chatId tele.ChatID) {
 	forecast, err := weather.GetForecast(b.ForecastCfg)
 	if err != nil {
 		fmt.Printf("Error getting forecast: %v\n", err)
 		return
 	}
 
-	_, err = b.Tele.Send(b.ForecastChatId, forecast)
+	_, err = b.Tele.Send(chatId, forecast)
 	if err != nil {
 		log.Printf("Could not send forecast: %v\n", err)
 	}
 }
 
 func (b *Bot) Start() {
+	b.initHandlers()
 	go b.Tele.Start()
 
-	err := gocron.Every(1).Day().At(b.cronLaunch).Do(b.SendForecast)
+	err := gocron.Every(1).Day().At(b.cronLaunch).Do(b.SendForecast, b.ForecastChatId)
 	if err != nil {
 		log.Fatal(err)
 	}
