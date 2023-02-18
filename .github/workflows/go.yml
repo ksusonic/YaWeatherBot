@@ -4,9 +4,8 @@
 name: Go
 
 on:
-  push:
-    branches: [ "trunk" ]
   pull_request:
+  push:
     branches: [ "trunk" ]
 
 jobs:
