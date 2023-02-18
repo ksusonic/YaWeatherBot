@@ -100,4 +100,5 @@ fabric.properties
 # Go workspace file
 go.work
 
-!/config/config-prod.yml
+config/config-prod.yml
+img

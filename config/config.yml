@@ -1,6 +1,7 @@
 admin: # Admin chat_id
 forecast_chat_id:
 cron: 09:00
+img_dir: img
 forecast:
   base_url: https://api.weather.yandex.ru/v2/fact
   forecast_place_naming: # How to call the place for the forecast

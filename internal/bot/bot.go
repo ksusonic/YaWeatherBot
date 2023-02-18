@@ -12,13 +12,19 @@ import (
 )
 
 type Bot struct {
-	Tele           *tele.Bot
-	ForecastCfg    *config.Forecast
-	ForecastChatId tele.ChatID
-	cronLaunch     string
+	Tele             *tele.Bot
+	ForecastCfg      *config.Forecast
+	ForecastChatId   tele.ChatID
+	cronLaunch       string
+	imgService       ImgService
+	enableImgService bool
 }
 
-func NewBot(cfg *config.Config) *Bot {
+type ImgService interface {
+	GetRandomImagePath() string
+}
+
+func NewBot(cfg *config.Config, imgService ImgService) *Bot {
 	teleBot, err := tele.NewBot(tele.Settings{
 		Token:  cfg.Token,
 		Poller: &tele.LongPoller{Timeout: 10 * time.Second},
@@ -30,10 +36,12 @@ func NewBot(cfg *config.Config) *Bot {
 	initMiddleware(teleBot, cfg)
 
 	return &Bot{
-		Tele:           teleBot,
-		ForecastChatId: tele.ChatID(cfg.ForecastChatId),
-		ForecastCfg:    &cfg.ForecastConfig,
-		cronLaunch:     cfg.Cron,
+		Tele:             teleBot,
+		ForecastChatId:   tele.ChatID(cfg.ForecastChatId),
+		ForecastCfg:      &cfg.ForecastConfig,
+		cronLaunch:       cfg.Cron,
+		imgService:       imgService,
+		enableImgService: true,
 	}
 }
 
@@ -47,6 +55,16 @@ func (b *Bot) SendForecast(chatId tele.ChatID) {
 	_, err = b.Tele.Send(chatId, forecast)
 	if err != nil {
 		log.Printf("Could not send forecast: %v\n", err)
+		return
+	}
+	if b.imgService != nil {
+		_, err = b.Tele.Send(chatId, &tele.Photo{
+			File: tele.FromDisk(b.imgService.GetRandomImagePath()),
+		})
+		if err != nil {
+			log.Printf("Could not send image: %v\n", err)
+			return
+		}
 	}
 }
 

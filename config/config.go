@@ -26,6 +26,7 @@ type Config struct {
 	Token          string `yaml:"-" env:"TOKEN"`
 	Cron           string `yaml:"cron"`
 	ForecastChatId int64  `yaml:"forecast_chat_id"`
+	ImgDir         string `yaml:"img_dir"`
 
 	ForecastConfig Forecast `yaml:"forecast"`
 }
