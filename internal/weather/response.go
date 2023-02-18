@@ -8,7 +8,8 @@ import (
 type Response struct {
 	Now  uint64 `json:"now"`
 	Info struct {
-		Url string `json:"url"`
+		Url           string `json:"url"`
+		DefPressureMm int    `json:"def_pressure_mm"`
 	} `json:"info"`
 	Yesterday struct {
 		Temp int `json:"temp"`

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"math"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -23,6 +24,22 @@ func GetForecast(cfg *config.Forecast) (string, error) {
 		"Сейчас в %s %d, %s\n",
 		cfg.ForecastPlaceNaming, r.Fact.Temp, r.Fact.ConditionReadable(),
 	)
+	if r.Info.DefPressureMm != 0 && r.Fact.PressureMm != 0 &&
+		math.Abs(float64(r.Info.DefPressureMm-r.Fact.PressureMm)) > 4 {
+		higher := r.Fact.PressureMm > r.Info.DefPressureMm
+		if higher {
+			message += fmt.Sprintf(
+				"Атмосферное давление повышено на %dмм (текущ %d)\n",
+				r.Fact.PressureMm-r.Info.DefPressureMm, r.Fact.PressureMm,
+			)
+		} else {
+			message += fmt.Sprintf(
+				"Атмосферное давление понижено на %dмм (текущ %d)\n",
+				r.Info.DefPressureMm-r.Fact.PressureMm, r.Fact.PressureMm,
+			)
+		}
+	}
+
 	message += fmt.Sprintf(
 		"Днем %s - %s\n",
 		r.Forecasts[0].Parts.DayShort.SmartRange(), r.Forecasts[0].Parts.DayShort.ConditionReadable(),
