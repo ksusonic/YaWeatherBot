@@ -2,9 +2,11 @@ package bot
 
 import (
 	"fmt"
+	"log"
+	"strconv"
+
 	"github.com/ksusonic/YaWeatherBot/config"
 	"github.com/ksusonic/YaWeatherBot/internal/weather"
-	"strconv"
 
 	tele "gopkg.in/telebot.v3"
 	"gopkg.in/telebot.v3/middleware"
@@ -26,7 +28,20 @@ func (b *Bot) initHandlers() {
 			fmt.Printf("Error getting forecast: %v\n", err)
 			return err
 		}
-		return c.Reply(forecast)
+		err = c.Reply(forecast)
+		if err != nil {
+			return err
+		}
+		if b.imgService != nil {
+			err = c.Send(&tele.Photo{
+				File: tele.FromDisk(b.imgService.GetRandomImagePath()),
+			})
+			if err != nil {
+				log.Printf("Could not send image: %v\n", err)
+				return err
+			}
+		}
+		return nil
 	})
 }
 
