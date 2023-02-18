@@ -5,6 +5,7 @@ import (
 	"github.com/jasonlvhit/gocron"
 	"github.com/ksusonic/YaWeatherBot/config"
 	"github.com/ksusonic/YaWeatherBot/internal/weather"
+	"gopkg.in/telebot.v3/middleware"
 	"log"
 	"time"
 
@@ -33,7 +34,8 @@ func NewBot(cfg *config.Config, imgService ImgService) *Bot {
 		log.Fatal("Error creating bot:\n", err)
 	}
 
-	initMiddleware(teleBot, cfg)
+	teleBot.Use(middleware.Logger())
+	teleBot.Use(middleware.Whitelist(cfg.Admin, cfg.ForecastChatId))
 
 	return &Bot{
 		Tele:             teleBot,

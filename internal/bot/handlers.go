@@ -5,11 +5,9 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/ksusonic/YaWeatherBot/config"
 	"github.com/ksusonic/YaWeatherBot/internal/weather"
 
 	tele "gopkg.in/telebot.v3"
-	"gopkg.in/telebot.v3/middleware"
 )
 
 func (b *Bot) initHandlers() {
@@ -43,13 +41,4 @@ func (b *Bot) initHandlers() {
 		}
 		return nil
 	})
-}
-
-func initMiddleware(b *tele.Bot, config *config.Config) {
-	b.Use(middleware.Logger())
-
-	if config.Admin != 0 {
-		adminOnly := b.Group()
-		adminOnly.Use(middleware.Whitelist(config.Admin))
-	}
 }
