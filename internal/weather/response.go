@@ -8,7 +8,8 @@ import (
 type Response struct {
 	Now  uint64 `json:"now"`
 	Info struct {
-		Url string `json:"url"`
+		Url           string `json:"url"`
+		DefPressureMm int    `json:"def_pressure_mm"`
 	} `json:"info"`
 	Yesterday struct {
 		Temp int `json:"temp"`
@@ -47,9 +48,9 @@ type Forecast struct {
 }
 
 type part struct {
-	TempMin     int     `json:"temp_min"`
-	TempMax     int     `json:"temp_max"`
-	TempAvg     int     `json:"temp_avg"`
+	TempMin     *int    `json:"temp_min"`
+	TempMax     *int    `json:"temp_max"`
+	Temp        int     `json:"temp"`
 	WindSpeed   float32 `json:"wind_speed"`
 	WindDir     string  `json:"wind_dir"`
 	PressureMm  int     `json:"pressure_mm"`
@@ -67,10 +68,10 @@ type part struct {
 }
 
 func (p part) SmartRange() string {
-	if p.TempMin == p.TempMax {
-		return strconv.Itoa(p.TempAvg)
+	if p.TempMin != nil && p.TempMax != nil && *p.TempMin != *p.TempMax {
+		return fmt.Sprintf("от %d до %d", *p.TempMin, *p.TempMax)
 	} else {
-		return fmt.Sprintf("от %d до %d", p.TempMin, p.TempMax)
+		return strconv.Itoa(p.Temp)
 	}
 }
 
