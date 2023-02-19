@@ -1,19 +1,17 @@
 package img
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
+	"net/http"
 	"os"
 )
 
 type Img struct {
 	path  string
 	files *[]os.DirEntry
-}
-
-func (i Img) GetRandomImagePath() string {
-	path := i.path + "/" + (*i.files)[rand.Intn(len(*i.files))].Name()
-	return path
 }
 
 func NewImg(path string) (*Img, error) {
@@ -31,4 +29,36 @@ func NewImg(path string) (*Img, error) {
 		path:  path,
 		files: &files,
 	}, nil
+}
+
+func (i Img) GetRandomImagePath() string {
+	path := i.path + "/" + (*i.files)[rand.Intn(len(*i.files))].Name()
+	return path
+}
+
+func (i Img) GetRandomDog() (string, error) {
+	get, err := http.Get("https://dog.ceo/api/breeds/image/random")
+	if err != nil {
+		return "", err
+	}
+	if get.StatusCode == http.StatusOK {
+		response := struct {
+			Message string `json:"Message"`
+			Status  string `json:"Status"`
+		}{}
+		all, err := io.ReadAll(get.Body)
+		if err != nil {
+			return "", err
+		}
+		err = json.Unmarshal(all, &response)
+		if err != nil {
+			return "", err
+		}
+		if response.Status != "success" || response.Message == "" {
+			return "", fmt.Errorf("not success Status of api: '%s', Message: %s", response.Status, response.Message)
+		}
+		return response.Message, nil
+	} else {
+		return "", fmt.Errorf("not ok Status code: %d", get.StatusCode)
+	}
 }

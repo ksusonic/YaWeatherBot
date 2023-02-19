@@ -23,6 +23,7 @@ type Bot struct {
 
 type ImgService interface {
 	GetRandomImagePath() string
+	GetRandomDog() (string, error)
 }
 
 func NewBot(cfg *config.Config, imgService ImgService) *Bot {
