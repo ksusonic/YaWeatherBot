@@ -20,6 +20,13 @@ func (b *Bot) initHandlers() {
 	b.Tele.Handle("/ping", func(c tele.Context) error {
 		return c.Reply("pong! 🏓")
 	})
+	b.Tele.Handle("/dog", func(c tele.Context) error {
+		randomDogLink, err := b.imgService.GetRandomDog()
+		if err != nil {
+			return fmt.Errorf("error calling /dog: %w", err)
+		}
+		return c.Reply(&tele.Photo{File: tele.FromURL(randomDogLink)})
+	})
 	b.Tele.Handle("/weather", func(c tele.Context) error {
 		forecast, err := weather.GetForecast(b.ForecastCfg)
 		if err != nil {
